@@ -1,5 +1,6 @@
 package com.jongmyeong.odga
 
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -26,6 +27,7 @@ import android.widget.Button
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +42,8 @@ import kotlin.collections.ArrayList
 
 class BluetoothFragment : Fragment() {
 
+    val handler = Handler(Looper.getMainLooper())
+    var addr:String? = null
     lateinit var mainActivity: MainActivity
     private val REQUEST_ENABLE_BT=1
     private val REQUEST_ALL_PERMISSION= 2
@@ -172,7 +176,7 @@ class BluetoothFragment : Fragment() {
                         }
                     }
                     BluetoothDevice.ACTION_ACL_CONNECTED -> {
-
+                        Toast.makeText(activity,"블루투스 연결 성공",Toast.LENGTH_SHORT).show()
 
                     }
                     BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
@@ -197,6 +201,7 @@ class BluetoothFragment : Fragment() {
                                     foundDevice = true
                                     //찾은 디바이스에 연결한다.
                                     connectToTargetedDevice(targetDevice)
+
 
                                 }
                             }
@@ -240,6 +245,7 @@ class BluetoothFragment : Fragment() {
                 mInputStream = socket?.inputStream
                 // 데이터 수신
                 beginListenForData()
+
 
             } catch (e: java.lang.Exception) {
                 // 블루투스 연결 중 오류 발생
@@ -296,32 +302,36 @@ class BluetoothFragment : Fragment() {
                                 val b_string = b.toInt()
                                 Log.d("b_string", "${b_string}")
 
-                                if(b_string == 82) {
+                                if(b_string == 70) {
                                     s_state=1
+
+                                }
+                                else{
+                                    s_state=0
                                 }
 
                                 Log.d("s_state",""+s_state)
-
+                                handler.postDelayed({addr = getCurrentLoc()},1000)
                                 if(s_state==1) {
-                                    val handler = Handler(Looper.getMainLooper())
+                                    s_state = 0
                                     handler.postDelayed({
+                                        s_state = 0
                                         for (i in phones.indices) {
                                             try {
-                                                var addr:String = getCurrentLoc()
                                                 val smsManager: SmsManager = SmsManager.getDefault()
-                                                for (i in phones.indices) {
-                                                    Log.d("address","${addr}")
-//                                                        smsManager?.sendTextMessage("${phones[i]?.fphone}", null, "사고발생 위치 정보(위도/경도) : ${address}", null, null)
-                                                    Toast.makeText(activity, "Message sent", Toast.LENGTH_SHORT).show()
-                                                    break
-                                                }
+                                                Log.d("address","${addr}")
+                                                smsManager?.sendTextMessage("${phones[i]?.fphone}", null, "사고발생 위치정보 : ${addr}", null, null)
+                                                Toast.makeText(activity, "Message sent", Toast.LENGTH_SHORT).show()
                                             } catch (e: Exception) {
                                                 Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
                                                 e.printStackTrace()
                                             }
                                         }
                                     }, 0)
+
                                 }
+
+
 ////
                             }
                         }
@@ -367,6 +377,52 @@ class BluetoothFragment : Fragment() {
             }
         }
     }
+    fun checkSMS(){
+        if (ContextCompat.checkSelfPermission(
+                requireActivity(),
+                android.Manifest.permission.SEND_SMS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    android.Manifest.permission.SEND_SMS
+                )
+            ) {
+                // Android provides a utility method, shouldShowRequestPermissionRationale(), that returns true if the user has previously
+                // denied the request, and returns false if a user has denied a permission and selected the Don't ask again option in the
+                // permission request dialog, or if a device policy prohibits the permission. If a user keeps trying to use functionality that
+                // requires a permission, but keeps denying the permission request, that probably means the user doesn't understand why
+                // the app needs the permission to provide that functionality. In a situation like that, it's probably a good idea to show an
+                // explanation.
+                val builder = AlertDialog.Builder(requireActivity())
+                builder.setTitle("info")
+                builder.setMessage("This app won't work properly unless you grant SMS permission.")
+                builder.setIcon(android.R.drawable.ic_dialog_info)
+                builder.setNeutralButton(
+                    "OK"
+                ) { dialog, which ->
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(android.Manifest.permission.SEND_SMS),
+                        MY_PERMISSION_REQUEST_SMS
+                    )
+                }
+                val dialog = builder.create()
+                dialog.show()
+            } else {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(android.Manifest.permission.SEND_SMS),
+                    MY_PERMISSION_REQUEST_SMS
+                )
+            }
+        }
+    }
+
+    // 낙상 확인 팝업
+    fun CheckAccident(){
+
+    }
 
 
 
@@ -385,7 +441,7 @@ class BluetoothFragment : Fragment() {
         val bleOnOffBtn: ToggleButton = view.findViewById(R.id.ble_on_off_btn)
         val scanBtn: Button = view.findViewById(R.id.scanBtn)
         val bluetoothManager =  activity?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-
+        checkSMS()
         bluetoothAdapter = bluetoothManager.adapter
         viewManager = LinearLayoutManager(activity)
 
@@ -405,6 +461,7 @@ class BluetoothFragment : Fragment() {
         }
 
         scanBtn.setOnClickListener { v:View? -> // Scan Button Onclick
+
             if (!hasPermissions(activity, PERMISSIONS)) {
                 requestPermissions(PERMISSIONS, REQUEST_ALL_PERMISSION)
             }
@@ -412,7 +469,7 @@ class BluetoothFragment : Fragment() {
             scanDevice()
 
         }
-//        checkSMS()
+//
 //        initRecycler()
 
 

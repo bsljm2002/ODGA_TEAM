@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
                 // startActivity(intent)
                 // 다른 액티비티에서 전환할 때
                 // activity?.finish()
-                
+
                 Toast.makeText(activity,"준비 중 입니다.",Toast.LENGTH_SHORT).show()
             }
 

@@ -1,32 +1,28 @@
 package com.jongmyeong.odga
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PhoneBookFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PhoneBookFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    lateinit var phoneInfoAdapter: PhoneInfoAdapter
+    lateinit var recyclerView1 : RecyclerView
+    private var mContext: Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -34,26 +30,48 @@ class PhoneBookFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_phone_book, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_phone_book, container, false)
+        recyclerView1 = view.findViewById(R.id.phoneInfo) as RecyclerView
+        phoneInfoAdapter = PhoneInfoAdapter()
+        phoneInfoAdapter?.notifyDataSetChanged()
+        recyclerView1?.adapter = phoneInfoAdapter
+        recyclerView1?.layoutManager= LinearLayoutManager(requireContext())
+
+
+        val button : ImageButton = view.findViewById(R.id.btnAdd)
+        button.setOnClickListener(object :View.OnClickListener {
+            override fun onClick(v: View?) {
+                val intent = Intent(activity, PhoneAdd::class.java)
+                startActivity(intent)
+                // 다른 액티비티에서 전환할 때
+//                activity?.finish()
+            }
+
+
+        })
+
+        initRecycler()
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PhoneBookFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PhoneBookFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    fun initRecycler() {
+
+        val DB_NAME = "sqlite.sql"
+        val DB_VERSION = 1
+        val helper = SqliteHelper(requireContext(), DB_NAME, DB_VERSION)
+        val phones = helper.selectPhoneBook()
+
+        phoneInfoAdapter?.datas.clear()
+        phoneInfoAdapter?.datas.addAll(phones)
+        Log.d("db","${phones}")
+        phoneInfoAdapter?.notifyDataSetChanged()
+
+        recyclerView1.addItemDecoration(
+            DividerItemDecoration(
+                activity,
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 }

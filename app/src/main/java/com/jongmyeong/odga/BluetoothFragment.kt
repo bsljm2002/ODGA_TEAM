@@ -5,10 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -74,6 +71,10 @@ class BluetoothFragment : Fragment() {
     val putTxt: MutableLiveData<String> = MutableLiveData("")
     var targetDevice: BluetoothDevice? = null
     var currentLatLng: Location? = null
+
+    lateinit var alertDialog : AlertDialog
+    lateinit var builder : AlertDialog.Builder
+    var call = 0
 
     fun getCurrentLoc(): String {
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
@@ -268,10 +269,7 @@ class BluetoothFragment : Fragment() {
             while (!Thread.currentThread().isInterrupted) {
                 try {
                     val bytesAvailable = mInputStream?.available()
-                    val DB_NAME = "sqlite.sql"
-                    val DB_VERSION = 1
-                    val helper = SqliteHelper(requireContext(), DB_NAME, DB_VERSION)
-                    val phones = helper.selectPhoneBook()
+
 
                     if (bytesAvailable != null) {
                         if (bytesAvailable > 0) { //데이터가 수신된 경우
@@ -311,28 +309,14 @@ class BluetoothFragment : Fragment() {
                                 }
 
                                 Log.d("s_state",""+s_state)
-                                handler.postDelayed({addr = getCurrentLoc()},1000)
+                                handler.postDelayed({addr = getCurrentLoc()},3000)
                                 if(s_state==1) {
                                     s_state = 0
                                     handler.postDelayed({
-                                        s_state = 0
-                                        for (i in phones.indices) {
-                                            try {
-                                                val smsManager: SmsManager = SmsManager.getDefault()
-                                                Log.d("address","${addr}")
-                                                smsManager?.sendTextMessage("${phones[i]?.fphone}", null, "사고발생 위치정보 : ${addr}", null, null)
-                                                Toast.makeText(activity, "Message sent", Toast.LENGTH_SHORT).show()
-                                            } catch (e: Exception) {
-                                                Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
-                                                e.printStackTrace()
-                                            }
-                                        }
+                                        CheckAccident()
+
                                     }, 0)
-
                                 }
-
-
-////
                             }
                         }
 
@@ -418,15 +402,98 @@ class BluetoothFragment : Fragment() {
             }
         }
     }
+    fun sendSMS(){
+        val DB_NAME = "sqlite.sql"
+        val DB_VERSION = 1
+        val helper = SqliteHelper(requireContext(), DB_NAME, DB_VERSION)
+        val phones = helper.selectPhoneBook()
 
-    // 낙상 확인 팝업
-    fun CheckAccident(){
+        for (i in phones.indices) {
+            try {
+                val smsManager: SmsManager =
+                    SmsManager.getDefault()
+                Log.d("address", "${addr}")
+                smsManager?.sendTextMessage(
+                    "${phones[i]?.fphone}",
+                    null,
+                    "사고발생 위치정보 : ${addr}",
+                    null,
+                    null
+                )
+                Toast.makeText(
+                    activity,
+                    "Message sent",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                Toast.makeText(
+                    activity,
+                    e.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                e.printStackTrace()
+            }
+        }
 
     }
 
+    // 낙상 확인 팝업
+    fun CheckAccident(){
+        try{
+            var str_tittle = "사고발생"
+            var str_message = "사고가 감지되었습니다. 자동 신고를 진행할까요? 미응답시 1분 후 자동 신고됩니다."
+            var str_buttonOK = "확인"
+            var str_buttonNO = "취소"
+            var btnStatn = 0
+            Handler().postDelayed({
+                if(btnStatn == 0)
+                {
+                    sendSMS()
+                    btnStatn = 1
+                }
 
+            }, 60000)
+            builder = AlertDialog.Builder(activity)
+            builder.setTitle(str_tittle) //팝업창 타이틀 지정
 
+            builder.setMessage(str_message) //팝업창 내용 지정
+            builder.setCancelable(false) //외부 레이아웃 클릭시도 팝업창이 사라지지않게 설정
+            builder.setPositiveButton(str_buttonOK, DialogInterface.OnClickListener { dialog, which ->
+                // TODO Auto-generated method stub
+                Toast.makeText(activity, "메세지 발송", Toast.LENGTH_SHORT).show()
+                Log.d("call1","${call}")
+                sendSMS()
+                getAlertHidden()
+                btnStatn = 1
 
+            })
+            builder.setNegativeButton(str_buttonNO, DialogInterface.OnClickListener { dialog, which ->
+                // TODO Auto-generated method stub
+                Toast.makeText(activity, "취소", Toast.LENGTH_SHORT).show()
+                getAlertHidden()
+                btnStatn = 1
+            })
+
+            alertDialog = builder.create()
+            try {
+                alertDialog.show()
+            }
+            catch (e : Exception){
+                e.printStackTrace()
+            }
+        }
+        catch(e : Exception){
+            e.printStackTrace()
+        }
+    }
+    fun getAlertHidden(){
+        try {
+            alertDialog.dismiss()
+        }
+        catch (e : Exception){
+            e.printStackTrace()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -467,7 +534,6 @@ class BluetoothFragment : Fragment() {
             }
 
             scanDevice()
-
         }
 //
 //        initRecycler()

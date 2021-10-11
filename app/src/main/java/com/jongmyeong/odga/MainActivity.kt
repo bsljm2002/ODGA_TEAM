@@ -51,5 +51,5 @@ class MainActivity : AppCompatActivity() {
 //                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
 //            }
 //        }
-    }
+//    }
 }

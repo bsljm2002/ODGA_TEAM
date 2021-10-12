@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.jongmyeong.odga">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -9,7 +10,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -19,9 +22,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ODGA"
         android:usesCleartextTraffic="true"
-        >
-        <meta-data android:name="com.kakao.sdk.AppKey" android:value="9cd88f258c6c7bd057581ecee3e430d1"/>
+        tools:targetApi="m"
+        android:fullBackupContent="@xml/backup_descriptor">
 
+        <activity
+            android:name=".SoundDetect"
+            android:exported="true" />
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="9cd88f258c6c7bd057581ecee3e430d1" />
 
         <activity
             android:name=".PhonebookUpdateRemove"

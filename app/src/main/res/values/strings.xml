@@ -2,4 +2,8 @@
     <string name="app_name">ODGA</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notice_permission">원활한 앱 사용을 위해 권한들을 수락 해주세요</string>
+    <string name="notice_cant_load_labels">Label들을 읽어올 수 없습니다</string>
+    <string name="Detection_Dangerous">위험 감지 시스템</string>
+    <string name="Initializing">초기화 중...</string>
 </resources>

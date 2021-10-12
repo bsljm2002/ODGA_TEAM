@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         configureBottomNavigation()
+
 //        getHashKey()
     }
     fun configureBottomNavigation() {

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SoundDetect">
+
+    <data>
+        <variable
+            name="soundDetect"
+            type="com.jongmyeong.odga.SoundDetect" />
+    </data>
+
+    <LinearLayout
+        android:showDividers="middle"
+        android:divider="@drawable/divider_horizontal_darker_gray"
+        android:orientation="vertical"
+        android:background="@drawable/splash_bg_gradlent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_weight="4.75"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+
+            android:id="@+id/appCompatImageViewWarning"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:alpha="0.0"
+            android:src="@drawable/alram" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/appCompatImageViewflash"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:alpha="0.0"
+            android:scaleType="fitCenter"
+            android:src="@drawable/flash" />
+
+    </RelativeLayout>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextViewCondition"
+            android:textSize="19sp"
+            android:gravity="center"
+            android:text="@string/Initializing"
+            android:textColor="@android:color/white"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/row_color"/>
+
+
+
+    </LinearLayout>
+
+
+</layout>

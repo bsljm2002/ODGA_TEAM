@@ -5,6 +5,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.RelativeLayout
 import com.jongmyeong.odga.databinding.ActivityMainBinding
+import android.content.pm.PackageManager
+
+import android.content.pm.PackageInfo
+import android.util.Base64
+import android.util.Log
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -12,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         configureBottomNavigation()
+
+//        getHashKey()
     }
     fun configureBottomNavigation() {
         binding.vpAcMainFragPager.adapter = MainFragmentStatePagerAdapter(supportFragmentManager, 3)
@@ -25,4 +35,22 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+//    private fun getHashKey() {
+//        var packageInfo: PackageInfo? = null
+//        try {
+//            packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+//        } catch (e: PackageManager.NameNotFoundException) {
+//            e.printStackTrace()
+//        }
+//        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
+//        for (signature in packageInfo!!.signatures) {
+//            try {
+//                val md: MessageDigest = MessageDigest.getInstance("SHA")
+//                md.update(signature.toByteArray())
+//                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+//            } catch (e: NoSuchAlgorithmException) {
+//                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
+//            }
+//        }
+//    }
 }

@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         configureBottomNavigation()
 //        getHashKey()
+
     }
     fun configureBottomNavigation() {
         binding.vpAcMainFragPager.adapter = MainFragmentStatePagerAdapter(supportFragmentManager, 3)

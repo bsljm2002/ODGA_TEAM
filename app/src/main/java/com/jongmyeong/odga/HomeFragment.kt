@@ -110,8 +110,8 @@ class HomeFragment : Fragment() {
         btnMusic.setOnClickListener(object :View.OnClickListener {
             override fun onClick(v: View?) {
                 // 버튼 클릭시 화면 전환
-                // val intent = Intent(activity, PhoneAdd::class.java)
-                // startActivity(intent)
+                 val intent = Intent(activity, SoundDetect::class.java)
+                 startActivity(intent)
                 // 다른 액티비티에서 전환할 때
                 // activity?.finish()
 

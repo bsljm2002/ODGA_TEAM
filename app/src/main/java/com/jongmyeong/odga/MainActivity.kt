@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), PermissionListener {
     private val context: AccessibilityService? = null
     private val builder: NotificationCompat.Builder? = null
     var d_data = null
-    val fourth: String = "4"
+    val fourth: String = "7"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

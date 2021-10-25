@@ -11,7 +11,7 @@ import java.net.URL
 
 class MusicService : Service() {
     lateinit var mp: MediaPlayer
-    val fourth: String = "4"
+    val fourth: String = "7"
 
     override fun onBind(intent: Intent): IBinder {
         // Service 객체와 통신할 때 사용

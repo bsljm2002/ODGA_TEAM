@@ -18,15 +18,35 @@
         android:layout_height="match_parent"
         android:id="@+id/webview"/>
 
-    <ImageButton
-        android:id="@+id/btnMusic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="105dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="668dp"
+        android:backgroundTint="#673AB7"
+        android:buttonTint="#673AB7"
+
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="17dp"
-        android:layout_marginBottom="23dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/musicbtn" />
+
+        android:onClick="ServiceStart"
+        android:text="ToggleButton"
+        android:textOff="PLAY"
+        android:textOn="STOP"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/addMusicButton"
+        android:layout_width="105dp"
+        android:layout_height="63dp"
+        android:layout_alignTop="@+id/toggleButton"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_toStartOf="@+id/toggleButton"
+        android:text="ADD"
+        android:textSize="30sp"
+        android:onClick="addButtonClick"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButton"
+        app:layout_constraintTop_toTopOf="@+id/toggleButton" />
 
 </RelativeLayout>

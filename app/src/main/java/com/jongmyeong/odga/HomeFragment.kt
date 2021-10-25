@@ -39,8 +39,6 @@ class HomeFragment : Fragment() {
     ): View? {
         val view : View = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val btnMusic : ImageButton = view.findViewById(R.id.btnMusic)
-
         val webview : WebView = view.findViewById(R.id.webview)
 
         webview.apply {
@@ -106,20 +104,6 @@ class HomeFragment : Fragment() {
         webview.loadUrl("https://map.kakao.com/")
 
 
-
-        btnMusic.setOnClickListener(object :View.OnClickListener {
-            override fun onClick(v: View?) {
-                // 버튼 클릭시 화면 전환
-                // val intent = Intent(activity, PhoneAdd::class.java)
-                // startActivity(intent)
-                // 다른 액티비티에서 전환할 때
-                // activity?.finish()
-
-                Toast.makeText(activity,"준비 중 입니다.",Toast.LENGTH_SHORT).show()
-            }
-
-
-        })
 
         return view
     }

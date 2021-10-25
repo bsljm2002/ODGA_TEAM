@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
@@ -14,12 +15,11 @@ import android.widget.RelativeLayout
 import com.jongmyeong.odga.databinding.ActivityMainBinding
 import android.content.pm.PackageManager
 
-import android.content.pm.PackageInfo
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.*
-import android.util.Base64
 import android.util.Log
 import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
@@ -29,8 +29,6 @@ import androidx.core.app.NotificationManagerCompat
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.ArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -48,6 +46,9 @@ class MainActivity : AppCompatActivity(), PermissionListener {
     private var mActivityMainBinding: ActivityMainBinding? = null
     private val context: AccessibilityService? = null
     private val builder: NotificationCompat.Builder? = null
+    var d_data = null
+    val fourth: String = "4"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +78,29 @@ class MainActivity : AppCompatActivity(), PermissionListener {
         binding.tlAcMainBottomMenu.getTabAt(0)!!.customView = bottomNaviLayout.findViewById(R.id.btn_bottom_navi_home_tab) as RelativeLayout
         binding.tlAcMainBottomMenu.getTabAt(1)!!.customView = bottomNaviLayout.findViewById(R.id.btn_bottom_navi_bluetooth_tab) as RelativeLayout
         binding.tlAcMainBottomMenu.getTabAt(2)!!.customView = bottomNaviLayout.findViewById(R.id.btn_bottom_navi_phone_tab) as RelativeLayout
-
-
     }
+    fun addButtonClick(view: View) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.0.$fourth:8000"))
+        startActivity(intent)
+    }
+
+    var i: Int = 0
+    fun ServiceStart(view : View){
+        val intent = Intent(this,MusicService::class.java)
+        i++
+        if (i%2==1){
+            startService(intent)
+        }else{
+            stopService(intent)
+        }
+//        startService(intent) // 서비스 시작
+    }
+
+    fun ServiceStop(view : View){
+        val intent = Intent(this,MusicService::class.java)
+        stopService(intent) // 서비스 종료
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {  //SDK_INT 버전에서 조건에 의해 차단
             val importance: Int = NotificationManager.IMPORTANCE_HIGH // IMPORTANCE_HIGH(중요도설정)
@@ -209,6 +230,63 @@ class MainActivity : AppCompatActivity(), PermissionListener {
             }
         }
     }
+
+    fun receiveData(who: Int) {
+        Log.d("whodata","${who}")
+        when (who) {
+
+            78 -> {
+                /*
+                        진동을 울려줌
+                     */
+                val vibrator: Vibrator? =
+                    getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(2000, 255))
+                } else {
+                    vibrator?.vibrate(2000)
+                }
+
+                /*
+                        위험 이미지가 그려진 AppCompatImageView의 alpha값을
+
+                        1.5초간 1.0에서 0.0으로 변경시키는 애니매이션을 동작한다(나타났다가 사라지는 간격(투명도))
+                     */
+                val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat<View?>(
+                    binding.appCompatImageViewWarning,
+                    View.ALPHA,
+                    1.0f,
+                    0.0f
+                )
+                objectAnimator.interpolator = AccelerateInterpolator()
+                objectAnimator.duration = 1500
+                objectAnimator.start()
+                val objectAnimator1: ObjectAnimator = ObjectAnimator.ofFloat<View?>(
+                    binding.appCompatImageViewflash,
+                    View.ALPHA,
+                    0.15f,
+                    0.0f
+                )
+                objectAnimator1.interpolator = AccelerateInterpolator()
+                objectAnimator1.duration = 500
+                objectAnimator1.repeatCount = 2
+                objectAnimator1.start()
+
+
+                /*
+                        헤드업 알람을 보여줌
+                     */showNotification()
+
+            }
+            else -> {}
+        }
+
+    }
+
+
+
+
+
     override fun onResume() {
         super.onResume()
 

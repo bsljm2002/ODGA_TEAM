@@ -25,9 +25,11 @@
         tools:targetApi="m"
         android:fullBackupContent="@xml/backup_descriptor">
 
-        <activity
-            android:name=".SoundDetect"
-            android:exported="true" />
+        <service android:name=".MusicService"
+            android:enabled="true"
+            android:exported="true"/>
+
+
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
